@@ -71,10 +71,8 @@
     <!-- Form card -->
 
     <div class="form-card">
-        <button type="button" id="form-toggle" class="form-toggle-btn" hidden>&#x25BE; Try new text</button>
-
+        <button type="button" id="form-toggle" class="form-toggle-btn" >&#x25B4; Hide Input</button>
       <form method="POST" id="analysis-form">
-
         <input type="hidden" name="selected_theme" id="theme-input" value="{{ request.form.get('selected_theme','')}}">
         <div id="form-body" class="form-body">
         <textarea
@@ -94,15 +92,10 @@
         </button>
         </div>
       </form>
-
     </div>
 
- 
-
     {% if sentiment %}
-
     <!-- Sentiment data island: keeps Jinja values out of JS scope -->
-
     <script type="application/json" id="sentiment-data">
 
     {
@@ -119,14 +112,9 @@
 
     </script>
 
- 
-
     <!-- Results -->
-
     <section class="results-section">
-
-      <h2 class="results-title">Results</h2>
-
+      <h3 class="results-title">Results</h3>
       <div class="charts-row">
 
  
@@ -457,7 +445,8 @@
 
  
 
-        toggleMatrixRain(theme === 'matrix');
+        if(typeof toggleMatrixRain === 'function'){
+            toggleMatrixRain(theme === 'matrix');}
 
       }
 
@@ -595,13 +584,10 @@
 
       });
 
-      /*collapse form when results are present*/
+      /*collapse form manually*/
       var formBody = document.getElementById('form-body');
       var toggleBtn = document.getElementById('form-toggle');
-      if (document.getElementById('sentiment-data')){
-        formBody.classList.add('collapsed');
-        toggleBtn.hidden = false;
-      }
+      toggleBtn.hidden = false;
       toggleBtn.addEventListener('click', function(){
         var isCollapsed = formBody.classList.toggle('collapsed');
         toggleBtn.textContent = isCollapsed ? '⩔ Try new text' : '⩓ Hide input';
