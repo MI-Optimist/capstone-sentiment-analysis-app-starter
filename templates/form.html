@@ -71,12 +71,12 @@
     <!-- Form card -->
 
     <div class="form-card">
-        <button type=""button" id="form-toggle" class=" "form-toggle-btn" hidden>&#x25BE; Try new text</button>
+        <button type="button" id="form-toggle" class="form-toggle-btn" hidden>&#x25BE; Try new text</button>
 
       <form method="POST" id="analysis-form">
 
         <input type="hidden" name="selected_theme" id="theme-input" value="{{ request.form.get('selected_theme','')}}">
-        <div id="form-body" class=""form-body">
+        <div id="form-body" class="form-body">
         <textarea
 
           name="user_text"
@@ -604,7 +604,7 @@
       }
       toggleBtn.addEventListener('click', function(){
         var isCollapsed = formBody.classList.toggle('collapsed');
-        toggleBtn.textContent = isCollapsed ? '⩔ Try new text' : '⩓ Hide input'
+        toggleBtn.textContent = isCollapsed ? '⩔ Try new text' : '⩓ Hide input';
       })
 
     }());
