@@ -1,1 +1,616 @@
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bangers&family=Share+Tech+Mono&family=Inter:wght@400;600;700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  transition: background 0.4s ease, color 0.4s ease;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center top;
+}
+
+/* ── Theme picker bar ── */
+#theme-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.45);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#theme-bar span {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+}
+
+.theme-btn {
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: transparent;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.03em;
+}
+
+.theme-btn:hover {
+  border-color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-1px);
+}
+
+.theme-btn.active {
+  background: rgba(255,255,255,0.25);
+  border-color: #fff;
+}
+
+/* ── Page wrapper ── */
+.page-wrapper {
+  padding-top: 56px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Hero ── */
+.hero {
+  text-align: center;
+  padding: 16px 20px 10px;
+  width: 100%;
+}
+
+.hero-title {
+  margin-bottom: 10px;
+  line-height: 1;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+
+.hero-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+  opacity: 0.8;
+  letter-spacing: 0.04em;
+  transition: color 0.4s ease;
+}
+
+/* ── Form card ── */
+.form-card {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 20px 50px;
+  padding: 36px;
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+}
+
+.form-card textarea {
+  width: 100%;
+  min-height: 140px;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 1rem;
+  resize: vertical;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border 0.25s ease, box-shadow 0.25s ease, background 0.4s ease, color 0.4s ease;
+  line-height: 1.6;
+}
+
+.analyze-btn {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.analyze-btn:hover {
+  transform: translateY(-2px) scale(1.01);
+}
+
+.analyze-btn:active {
+  transform: scale(0.98);
+}
+
+.analyze-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.2);
+  opacity: 0;
+  border-radius: inherit;
+  transition: opacity 0.3s ease;
+}
+
+.analyze-btn:active::after {
+  opacity: 1;
+}
+
+/* Collapsible form body*/
+.form-body {
+  max-height: 500px;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+  margine-top: 0;
+}
+
+.form-body.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+}
+
+/*toggle button base*/
+.form-toggle-btn {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* Per-theme toggle button colors */
+
+body[data-theme="worldcup"] .form-toggle-btn {
+
+  background: rgba(255,215,0,0.2);
+
+  color: #FFD700;
+
+  border: 1px solid rgba(255,215,0,0.4);
+
+  font-family: 'Bebas Neue', sans-serif;
+
+  font-size: 1rem;
+
+}
+
+body[data-theme="worldcup"] .form-toggle-btn:hover {
+
+  background: rgba(255,215,0,0.35);
+
+}
+
+ 
+
+body[data-theme="marvel"] .form-toggle-btn {
+
+  background: rgba(226,54,54,0.2);
+
+  color: #ff6666;
+
+  border: 1px solid rgba(226,54,54,0.4);
+
+  font-family: 'Bangers', sans-serif;
+
+  font-size: 1rem;
+
+  letter-spacing: 0.1em;
+
+}
+
+body[data-theme="marvel"] .form-toggle-btn:hover {
+
+  background: rgba(226,54,54,0.35);
+
+}
+
+ 
+
+body[data-theme="matrix"] .form-toggle-btn {
+
+  background: rgba(0,255,65,0.08);
+
+  color: #00ff41;
+
+  border: 1px solid rgba(0,255,65,0.3);
+
+  font-family: 'Share Tech Mono', monospace;
+
+}
+
+body[data-theme="matrix"] .form-toggle-btn:hover {
+
+  background: rgba(0,255,65,0.18);
+
+  box-shadow: 0 0 10px rgba(0,255,65,0.3);
+
+}
+
+/* ── Results section ── */
+.results-section {
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 20px 60px;
+  animation: fadeSlideUp 0.6s ease forwards;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.results-title {
+  text-align: center;
+  margin-bottom: 30px;
+  transition: color 0.4s ease;
+}
+
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+
+.chart-card {
+  flex: 1 1 440px;
+  max-width: 520px;
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+}
+
+.chart-card h3 {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: color 0.4s ease;
+}
+
+/* ============================================================
+   THEME: WORLD CUP
+   ============================================================ */
+
+body[data-theme="worldcup"] {
+  background-image:
+    linear-gradient(rgba(0,30,0,0.55), rgba(0,30,0,0.55)),
+    url('../img/worldcup-banner.png');
+  background-color: #0d3318;
+  color: #fff;
+  font-family: 'Bebas Neue', 'Inter', sans-serif;
+}
+
+body[data-theme="worldcup"] .hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 10vw, 7rem);
+  color: #FFD700;
+  text-shadow: 0 4px 24px rgba(255,215,0,0.5), 0 2px 4px rgba(0,0,0,0.8);
+  letter-spacing: 0.04em;
+}
+
+body[data-theme="worldcup"] .hero-sub {
+  color: rgba(255,255,255,0.85);
+  font-family: 'Inter', sans-serif;
+}
+
+body[data-theme="worldcup"] .form-card {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,215,0,0.3);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,215,0,0.15);
+}
+
+body[data-theme="worldcup"] .form-card textarea {
+  background: rgba(255,255,255,0.9);
+  color: #1a1a1a;
+  border: 2px solid rgba(255,215,0,0.4);
+}
+
+body[data-theme="worldcup"] .form-card textarea:focus {
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255,215,0,0.25);
+}
+
+body[data-theme="worldcup"] .analyze-btn {
+  background: linear-gradient(135deg, #FFD700 0%, #f0a500 100%);
+  color: #1a1a1a;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  box-shadow: 0 4px 20px rgba(255,165,0,0.5);
+  border: none;
+}
+
+body[data-theme="worldcup"] .analyze-btn:hover {
+  box-shadow: 0 6px 28px rgba(255,165,0,0.7);
+}
+
+body[data-theme="worldcup"] .results-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: #FFD700;
+  text-shadow: 0 2px 12px rgba(255,215,0,0.4);
+  letter-spacing: 0.06em;
+}
+
+body[data-theme="worldcup"] .chart-card {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,215,0,0.25);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+body[data-theme="worldcup"] .chart-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: #FFD700;
+  letter-spacing: 0.12em;
+}
+
+/* ============================================================
+   THEME: MARVEL
+   ============================================================ */
+
+body[data-theme="marvel"] {
+  background-image:
+    linear-gradient(rgba(20,0,0,0.60), rgba(20,0,0,0.60)),
+    url('../img/marvel-banner.png');
+  background-color: #1a0000;
+  color: #fff;
+  font-family: 'Bangers', 'Inter', sans-serif;
+}
+
+body[data-theme="marvel"] .hero-title {
+  font-family: 'Bangers', sans-serif;
+  font-size: clamp(3.5rem, 10vw, 7rem);
+  color: #e23636;
+  text-shadow: 3px 3px 0 #000, 0 4px 24px rgba(226,54,54,0.6);
+  letter-spacing: 0.06em;
+}
+
+body[data-theme="marvel"] .hero-sub {
+  color: rgba(255,255,255,0.8);
+  font-family: 'Inter', sans-serif;
+}
+
+body[data-theme="marvel"] .form-card {
+  background: rgba(10,0,0,0.75);
+  border: 2px solid #e23636;
+  box-shadow: 0 0 30px rgba(226,54,54,0.3), 0 8px 40px rgba(0,0,0,0.6);
+  animation: marvelGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes marvelGlow {
+  from { box-shadow: 0 0 20px rgba(226,54,54,0.3), 0 8px 40px rgba(0,0,0,0.6); }
+  to   { box-shadow: 0 0 40px rgba(226,54,54,0.6), 0 8px 40px rgba(0,0,0,0.6); }
+}
+
+body[data-theme="marvel"] .form-card textarea {
+  background: rgba(30,0,0,0.85);
+  color: #f5f5f5;
+  border: 2px solid rgba(226,54,54,0.4);
+}
+
+body[data-theme="marvel"] .form-card textarea::placeholder {
+  color: rgba(255,255,255,0.35);
+}
+
+body[data-theme="marvel"] .form-card textarea:focus {
+  border-color: #e23636;
+  box-shadow: 0 0 0 3px rgba(226,54,54,0.2);
+  background: rgba(255,255,255,0.1);
+}
+
+body[data-theme="marvel"] .analyze-btn {
+  background: linear-gradient(135deg, #cc2222 0%, #8a0000 100%);
+  color: #ffffff;
+  font-family: 'Bangers', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.12em;
+  box-shadow: 0 4px 20px rgba(226,54,54,0.5);
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+  border: none;
+}
+
+body[data-theme="marvel"] .analyze-btn:hover {
+  box-shadow: 0 6px 32px rgba(226,54,54,0.75);
+}
+
+body[data-theme="marvel"] .results-title {
+  font-family: 'Bangers', sans-serif;
+  font-size: 2.5rem;
+  color: #e23636;
+  text-shadow: 2px 2px 0 #000;
+  letter-spacing: 0.08em;
+}
+
+body[data-theme="marvel"] .chart-card {
+  background: rgba(10,0,0,0.7);
+  border: 1px solid rgba(226,54,54,0.35);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 12px rgba(226,54,54,0.15);
+}
+
+body[data-theme="marvel"] .chart-card h3 {
+  font-family: 'Bangers', sans-serif;
+  font-size: 1.2rem;
+  color: #e23636;
+  letter-spacing: 0.1em;
+}
+
+/* ============================================================
+   THEME: MATRIX
+   ============================================================ */
+
+body[data-theme="matrix"] {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.70), rgba(0,0,0,0.70)),
+    url('static/img/matrix-banner.png');
+  background-color: #000;
+  color: #00ff41;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+body[data-theme="matrix"] .hero-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  color: #00ff41;
+  text-shadow: 0 0 10px #00ff41, 0 0 30px rgba(0,255,65,0.5);
+  letter-spacing: 0.15em;
+  animation: matrixFlicker 4s infinite;
+}
+
+@keyframes matrixFlicker {
+  0%, 95%, 100% { opacity: 1; }
+  96% { opacity: 0.85; }
+  97% { opacity: 1; }
+  98% { opacity: 0.9; }
+}
+
+body[data-theme="matrix"] .hero-sub {
+  color: rgba(0,255,65,0.7);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.08em;
+}
+
+body[data-theme="matrix"] .form-card {
+  background: rgba(0,10,0,0.8);
+  border: 1px solid #00ff41;
+  box-shadow: 0 0 24px rgba(0,255,65,0.2), inset 0 0 20px rgba(0,255,65,0.03);
+}
+
+body[data-theme="matrix"] .form-card textarea {
+  background: rgba(0,20,0,0.9);
+  color: #00ff41;
+  border: 1px solid rgba(0,255,65,0.4);
+  font-family: 'Share Tech Mono', monospace;
+  caret-color: #00ff41;
+}
+
+body[data-theme="matrix"] .form-card textarea::placeholder {
+  color: rgba(0,255,65,0.3);
+}
+
+body[data-theme="matrix"] .form-card textarea:focus {
+  border-color: #00ff41;
+  box-shadow: 0 0 0 3px rgba(0,255,65,0.15), 0 0 12px rgba(0,255,65,0.2);
+}
+
+body[data-theme="matrix"] .analyze-btn {
+  background: transparent;
+  color: #00ff41;
+  border: 2px solid #00ff41;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  box-shadow: 0 0 14px rgba(0,255,65,0.3), inset 0 0 10px rgba(0,255,65,0.05);
+}
+
+body[data-theme="matrix"] .analyze-btn:hover {
+  background: rgba(0,255,65,0.1);
+  box-shadow: 0 0 28px rgba(0,255,65,0.55), inset 0 0 20px rgba(0,255,65,0.08);
+}
+
+body[data-theme="matrix"] .results-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.8rem;
+  color: #00ff41;
+  text-shadow: 0 0 10px rgba(0,255,65,0.6);
+  letter-spacing: 0.2em;
+}
+
+body[data-theme="matrix"] .chart-card {
+  background: rgba(0,8,0,0.85);
+  border: 1px solid rgba(0,255,65,0.3);
+  box-shadow: 0 0 16px rgba(0,255,65,0.1), 0 4px 20px rgba(0,0,0,0.5);
+}
+
+body[data-theme="matrix"] .chart-card h3 {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  color: rgba(0,255,65,0.8);
+  letter-spacing: 0.15em;
+}
+
+/* Matrix rain canvas */
+#matrix-rain {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+body[data-theme="matrix"] #matrix-rain {
+  opacity: 0.18;
+}
+
+#theme-bar, .page-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+  .form-card {
+    padding: 24px 18px;
+    margin: 0 12px 40px;
+  }
+
+  .charts-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-card {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  #theme-bar span {
+    display: none;
+  }
+}

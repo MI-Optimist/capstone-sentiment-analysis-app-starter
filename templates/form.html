@@ -1,12 +1,618 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Sentiment Analysis</title>
-    </head>
-    <body>
-        <form method="POST">
-            <textarea name="user_text" rows="5"></textarea>
-            <input type="submit" value="Analyze Text">
-        </form>
-    </body>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>sentimentScope</title>
+
+  <!-- Plotly does not publish SRI hashes; crossorigin is set for CORS safety --> <!-- NOSONAR -->
+
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet"
+
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+
+        crossorigin="anonymous">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body data-theme="matrix">
+
+ 
+
+  <!-- Matrix rain canvas (only visible in matrix theme) -->
+
+  <canvas id="matrix-rain"></canvas>
+
+ 
+
+  <!-- Theme picker -->
+
+  <div id="theme-bar">
+
+    <span>THEME</span>
+
+    <button class="theme-btn" data-target="worldcup">&#x26BD; World Cup</button>
+
+    <button class="theme-btn" data-target="marvel">&#x1F9B8; Marvel</button>
+
+    <button class="theme-btn active" data-target="matrix">&#x1F4BB; Matrix</button>
+
+  </div>
+
+ 
+
+  <div class="page-wrapper">
+
+ 
+
+    <!-- Hero -->
+
+    <section class="hero">
+
+      <h1 class="hero-title">sentimentScope</h1>
+
+      <p class="hero-sub">Decode the emotion behind any text &mdash; instantly.</p>
+
+    </section>
+
+ 
+
+    <!-- Form card -->
+
+    <div class="form-card">
+        <button type=""button" id="form-toggle" class=" "form-toggle-btn" hidden>&#x25BE; Try new text</button>
+
+      <form method="POST" id="analysis-form">
+
+        <input type="hidden" name="selected_theme" id="theme-input" value="{{ request.form.get('selected_theme','')}}">
+        <div id="form-body" class=""form-body">
+        <textarea
+
+          name="user_text"
+
+          id="user-text"
+
+          placeholder="Paste a review, tweet, article, or anything you want to analyze&hellip;"
+
+        >{{ request.form.get('user_text', '') }}</textarea>
+
+        <button type="submit" class="analyze-btn" id="submit-btn">
+
+          Analyze &#x2192;
+
+        </button>
+        </div>
+      </form>
+
+    </div>
+
+ 
+
+    {% if sentiment %}
+
+    <!-- Sentiment data island: keeps Jinja values out of JS scope -->
+
+    <script type="application/json" id="sentiment-data">
+
+    {
+
+      "pos":    {{ (sentiment['pos'] * 100) | round(1) }},
+
+      "neu":    {{ (sentiment['neu'] * 100) | round(1) }},
+
+      "neg":    {{ (sentiment['neg'] * 100) | round(1) }},
+
+      "custom": {{ (sentiment['custom model positive'] * 100) | round(1) }}
+
+    }
+
+    </script>
+
+ 
+
+    <!-- Results -->
+
+    <section class="results-section">
+
+      <h2 class="results-title">Results</h2>
+
+      <div class="charts-row">
+
+ 
+
+        <div class="chart-card">
+
+          <h3>VADER Sentiment Analysis</h3>
+
+          <div id="barChart"></div>
+
+        </div>
+
+ 
+
+        <div class="chart-card">
+
+          <h3>Custom Model Sentiment Analysis</h3>
+
+          <div id="gauge"></div>
+
+        </div>
+
+ 
+
+      </div>
+
+    </section>
+
+ 
+
+    <script>
+
+      function getThemeColors(theme) {
+
+        if (theme === 'worldcup') {
+
+          return {
+
+            pos: 'rgba(30,130,76,0.85)',
+
+            neu: 'rgba(255,215,0,0.85)',
+
+            neg: 'rgba(200,0,0,0.85)',
+
+            gauge: ['rgba(200,0,0,0.8)','rgba(247,156,71,0.8)','rgba(255,218,112,0.8)','rgba(125,223,180,0.8)','rgba(30,130,76,0.8)'],
+
+            gaugeBar: '#FFD700',
+
+            paper: 'rgba(0,0,0,0)',
+
+            font: '#fff',
+
+            gridcolor: 'rgba(255,255,255,0.15)'
+
+          };
+
+        } else if (theme === 'marvel') {
+
+          return {
+
+            pos: 'rgba(30,130,76,0.85)',
+
+            neu: 'rgba(180,180,180,0.85)',
+
+            neg: 'rgba(226,54,54,0.85)',
+
+            gauge: ['rgba(200,0,0,0.85)','rgba(226,100,54,0.85)','rgba(180,180,180,0.85)','rgba(100,200,140,0.85)','rgba(30,130,76,0.85)'],
+
+            gaugeBar: '#e23636',
+
+            paper: 'rgba(0,0,0,0)',
+
+            font: '#fff',
+
+            gridcolor: 'rgba(255,255,255,0.15)'
+
+          };
+
+        } else {
+
+          return {
+
+            pos: 'rgba(0,255,65,0.8)',
+
+            neu: 'rgba(0,102,255,0.8)',
+
+            neg: 'rgba(200,0,0,0.8)',
+
+            gauge: ['rgba(200,0,0,0.8)','rgba(200,100,0,0.8)','rgba(0,102,255,0.8)','rgba(0,200,80,0.8)','rgba(0,255,65,0.8)'],
+
+            gaugeBar: '#00ff41',
+
+            paper: 'rgba(0,0,0,0)',
+
+            font: '#00ff41',
+
+            gridcolor: 'rgba(0,255,65,0.15)'
+
+          };
+
+        }
+
+      }
+
+ 
+
+      function renderCharts(theme) {
+
+        var sdEl = document.getElementById('sentiment-data');
+
+        if (!sdEl) { return; }
+
+        var sd     = JSON.parse(sdEl.textContent);
+
+        var pos    = sd.pos;
+
+        var neu    = sd.neu;
+
+        var neg    = sd.neg;
+
+        var custom = sd.custom;
+
+ 
+
+        var c    = getThemeColors(theme);
+
+        var fontFamilies = {
+
+          matrix:  'Share Tech Mono, monospace',
+
+          marvel:  'Bangers, sans-serif',
+
+          worldcup: 'Bebas Neue, sans-serif'
+
+        };
+
+        var fontFamily = fontFamilies[theme] || 'Bebas Neue, sans-serif';
+
+        var font = { color: c.font, family: fontFamily, size: 14 };
+
+ 
+
+        var barData = [{
+
+          type: 'bar',
+
+          x: [pos, neu, neg],
+
+          y: ['Positive', 'Neutral', 'Negative'],
+
+          orientation: 'h',
+
+          marker: { color: [c.pos, c.neu, c.neg] },
+
+          text: [pos + '%', neu + '%', neg + '%'],
+
+          textposition: 'outside',
+
+          textfont: { color: c.font, size: 13 }
+
+        }];
+
+ 
+
+        var barLayout = {
+
+          paper_bgcolor: c.paper,
+
+          plot_bgcolor:  c.paper,
+
+          margin: { t: 10, r: 60, l: 70, b: 30 },
+
+          xaxis: {
+
+            range: [0, 105],
+
+            showgrid: true,
+
+            gridcolor: c.gridcolor,
+
+            tickfont: { color: c.font },
+
+            zeroline: false
+
+          },
+
+          yaxis: { tickfont: { color: c.font, size: 14 } },
+
+          font: font,
+
+          height: 220
+
+        };
+
+ 
+
+        var gaugeData = [{
+
+          type: 'indicator',
+
+          mode: 'gauge+number',
+
+          value: custom,
+
+          number: { suffix: '%', font: { color: c.font, size: 28 } },
+
+          gauge: {
+
+            axis: {
+
+              range: [0, 100],
+
+              tickwidth: 1,
+
+              tickcolor: c.font,
+
+              tickfont: { color: c.font }
+
+            },
+
+            bar: { color: c.gaugeBar, thickness: 0.3 },
+
+            bgcolor: 'rgba(0,0,0,0)',
+
+            borderwidth: 0,
+
+            steps: [
+
+              { range: [0,  20], color: c.gauge[0] },
+
+              { range: [20, 40], color: c.gauge[1] },
+
+              { range: [40, 60], color: c.gauge[2] },
+
+              { range: [60, 80], color: c.gauge[3] },
+
+              { range: [80,100], color: c.gauge[4] }
+
+            ]
+
+          }
+
+        }];
+
+ 
+
+        var gaugeLayout = {
+
+          paper_bgcolor: c.paper,
+
+          margin: { t: 20, r: 30, l: 30, b: 20 },
+
+          font: font,
+
+          height: 250
+
+        };
+
+ 
+
+        var config = { responsive: true, displayModeBar: false };
+
+        Plotly.newPlot('barChart', barData, barLayout, config);
+
+        Plotly.newPlot('gauge',   gaugeData, gaugeLayout, config);
+
+      }
+
+ 
+
+      document.addEventListener('DOMContentLoaded', function () {
+
+        renderCharts(document.body.dataset.theme || 'matrix');
+
+      });
+
+    </script>
+
+    {% endif %}
+
+ 
+
+  </div><!-- /.page-wrapper -->
+
+ 
+
+  <script>
+
+    /* ── Theme switcher ── */
+
+    (function () {
+
+      var THEMES = ['worldcup', 'marvel', 'matrix'];
+
+      var saved  = localStorage.getItem('ss-theme') || 'matrix';
+
+ 
+
+      var formTheme = document.getElementById('theme-input').value;
+
+      if (THEMES.includes(formTheme)) { saved = formTheme; }
+
+ 
+
+      function applyTheme(theme) {
+
+        document.body.dataset.theme = theme;
+
+        document.getElementById('theme-input').value = theme;
+
+        localStorage.setItem('ss-theme', theme);
+
+ 
+
+        document.querySelectorAll('.theme-btn').forEach(function (btn) {
+
+          btn.classList.toggle('active', btn.dataset.target === theme);
+
+        });
+
+ 
+
+        if (typeof renderCharts === 'function') {
+
+          renderCharts(theme);
+
+        }
+
+ 
+
+        toggleMatrixRain(theme === 'matrix');
+
+      }
+
+ 
+
+      document.querySelectorAll('.theme-btn').forEach(function (btn) {
+
+        btn.addEventListener('click', function () {
+
+          applyTheme(btn.dataset.target);
+
+        });
+
+      });
+
+ 
+
+      applyTheme(saved);
+
+ 
+
+      /* Loading state */
+
+      document.getElementById('analysis-form').addEventListener('submit', function () {
+
+        var btn = document.getElementById('submit-btn');
+
+        btn.textContent = 'Analyzing…';
+
+        btn.disabled    = true;
+
+        btn.style.opacity = '0.7';
+
+      });
+
+    }());
+
+ 
+
+    /* ── Matrix rain ── */
+
+    (function () {
+
+      var canvas  = document.getElementById('matrix-rain');
+
+      var ctx     = canvas.getContext('2d');
+
+      var running = false;
+
+      var rafId   = null;
+
+      var cols, drops;
+
+      var chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+
+ 
+
+      function resize() {
+
+        canvas.width  = window.innerWidth;
+
+        canvas.height = window.innerHeight;
+
+        cols  = Math.floor(canvas.width / 16);
+
+        drops = [];
+
+        for (var i = 0; i < cols; i++) { drops.push(1); }
+
+      }
+
+ 
+
+      function draw() {
+
+        ctx.fillStyle = 'rgba(0,0,0,0.05)';
+
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#00ff41';
+
+        ctx.font = '14px "Share Tech Mono", monospace';
+
+ 
+
+        for (var i = 0; i < drops.length; i++) {
+
+          var ch = chars[Math.floor(Math.random() * chars.length)];
+
+          ctx.fillText(ch, i * 16, drops[i] * 16);
+
+          if (drops[i] * 16 > canvas.height && Math.random() > 0.975) {
+
+            drops[i] = 0;
+
+          }
+
+          drops[i]++;
+
+        }
+
+        rafId = requestAnimationFrame(draw);
+
+      }
+
+ 
+
+      globalThis.toggleMatrixRain = function (on) {
+
+        if (on && !running) {
+
+          running = true;
+
+          resize();
+
+          draw();
+
+        } else if (!on && running) {
+
+          running = false;
+
+          cancelAnimationFrame(rafId);
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        }
+
+      };
+
+ 
+
+      globalThis.addEventListener('resize', function () {
+
+        if (running) { resize(); }
+
+      });
+
+      /*collapse form when results are present*/
+      var formBody = document.getElementById('form-body');
+      var toggleBtn = document.getElementById('form-toggle');
+      if (document.getElementById('sentiment-data')){
+        formBody.classList.add('collapsed');
+        toggleBtn.hidden = false;
+      }
+      toggleBtn.addEventListener('click', function(){
+        var isCollapsed = formBody.classList.toggle('collapsed');
+        toggleBtn.textContent = isCollapsed ? '⩔ Try new text' : '⩓ Hide input'
+      })
+
+    }());
+
+  </script>
+
+ 
+
+</body>
+
 </html>
